@@ -16,7 +16,7 @@ export interface FolderChainItem {
 
 export const useFolderChainItems = (): FolderChainItem[] => {
     const folderChain = useSelector(selectFolderChain);
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<any>();
 
     const folderChainItems = useMemo(() => {
         const items: FolderChainItem[] = [];
@@ -28,7 +28,7 @@ export const useFolderChainItems = (): FolderChainItem[] => {
                 file,
                 disabled: !file,
                 onClick:
-                    !FileHelper.isOpenable(file) || i === folderChain.length - 1
+                    !file || !FileHelper.isOpenable(file) || i === folderChain.length - 1
                         ? undefined
                         : () =>
                               dispatch(

@@ -4,7 +4,13 @@ https://discord.gg/4HJaFn9
 
 ## Setting up the development environment
 
-1. Clone the repository and bootstrap lerna. This will wire up all Chonky packages 
+0. Pre-requisites: Node.js 16. Then:
+   ```bash
+   npm install yarn@1.x
+   yarn global add lerna@3.22.x
+   ```
+
+1. Clone the repository and bootstrap lerna. This will wire up all Chonky packages
    to each other:
     ```bash
     git clone git@github.com:TimboKZ/Chonky.git

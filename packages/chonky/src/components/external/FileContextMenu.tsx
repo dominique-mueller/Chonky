@@ -21,7 +21,7 @@ import { SmartToolbarDropdownButton } from './ToolbarDropdownButton';
 export interface FileContextMenuProps {}
 
 export const FileContextMenu: React.FC<FileContextMenuProps> = React.memo(() => {
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<any>();
     useEffect(() => {
         dispatch(reduxActions.setContextMenuMounted(true));
         return () => {

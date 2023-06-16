@@ -4,55 +4,56 @@ import { FileData } from '../types/file.types';
 import { Logger } from './logger';
 
 export class FileHelper {
-    public static isDirectory(file: Nullable<FileData>): file is FileData {
+    public static isDirectory(file: Nullable<FileData>): boolean {
         // Not a directory by default
         return !!file && file.isDir === true;
     }
 
-    public static isHidden(file: Nullable<FileData>): file is FileData {
+    public static isHidden(file: Nullable<FileData>): boolean {
         // Not hidden by default
         return !!file && file.isHidden === true;
     }
 
-    public static isSymlink(file: Nullable<FileData>): file is FileData {
+    public static isSymlink(file: Nullable<FileData>): boolean {
         // Not a symlink by default
         return !!file && file.isSymlink === true;
     }
 
-    public static isEncrypted(file: Nullable<FileData>): file is FileData {
+    public static isEncrypted(file: Nullable<FileData>): boolean {
         // Not encrypted by default
         return !!file && file.isEncrypted === true;
     }
 
-    public static isClickable(file: Nullable<FileData>): file is FileData {
+    public static isClickable(file: Nullable<FileData>): boolean {
         // Clickable by default
         return !!file;
     }
 
-    public static isOpenable(file: Nullable<FileData>): file is FileData {
+    public static isOpenable(file: Nullable<FileData>): boolean {
         // Openable by default
         return !!file && file.openable !== false;
     }
 
-    public static isSelectable(file: Nullable<FileData>): file is FileData {
+    public static isSelectable(file: Nullable<FileData>): boolean {
         // Selectable by default
         return !!file && file.selectable !== false;
     }
 
-    public static isDraggable(file: Nullable<FileData>): file is FileData {
+    public static isDraggable(file: Nullable<FileData>): boolean {
         // File & folders are draggable by default, `null` is not
         return !!file && file.draggable !== false;
     }
 
-    public static isDroppable(file: Nullable<FileData>): file is FileData {
+    public static isDroppable(file: Nullable<FileData>): boolean {
         // Folders are droppable by default, files are not
         if (!file) return false;
         if (file.isDir && file.droppable !== false) return true;
         return file.droppable === true;
     }
 
-    public static isDndOpenable(file: Nullable<FileData>): file is FileData {
+    public static isDndOpenable(file: Nullable<FileData>): boolean {
         // Folders are DnD openable by default, files are not
+        if (!file) return false;
         if (!FileHelper.isOpenable(file)) return false;
         if (file.isDir && file.dndOpenable !== false) return true;
         return file.dndOpenable === true;
@@ -70,7 +71,7 @@ export class FileHelper {
                 return new Date(maybeDate);
             } catch (error) {
                 Logger.error(
-                    `Could not convert provided string/number into a date: ${error.message} `,
+                    `Could not convert provided string/number into a date: ${(error as any)?.message} `,
                     'Invalid value:',
                     maybeDate
                 );

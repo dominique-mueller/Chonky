@@ -1,4 +1,4 @@
-import filesize from 'filesize';
+import { filesize } from 'filesize';
 import { createContext, useContext, useMemo } from 'react';
 import { IntlShape, useIntl } from 'react-intl';
 import { Nullable, Undefinable } from 'tsdef';

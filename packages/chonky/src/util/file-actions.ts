@@ -20,7 +20,7 @@ import { SortOrder } from '../types/sort.types';
 import { FileHelper } from './file-helper';
 
 export const useFileActionTrigger = (fileActionId: string) => {
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<any>();
     const fileAction = useParamSelector(selectFileActionData, fileActionId);
     return useCallback(() => dispatch(thunkRequestFileAction(fileAction, undefined)), [
         dispatch,
@@ -85,7 +85,7 @@ export const useFileActionProps = (
             isFileViewButtonAndCurrentView ||
             isOptionAndEnabled ||
             customActive;
-        
+
         let disabled: boolean = (!!action.requiresSelection && actionSelectionEmpty) || customDisabled;
 
         if (action.id === ChonkyActions.OpenParentFolder.id) {

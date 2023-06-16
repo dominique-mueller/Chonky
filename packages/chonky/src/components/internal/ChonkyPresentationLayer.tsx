@@ -6,7 +6,7 @@
 
 import Box from '@material-ui/core/Box';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
-import React, { useCallback, useMemo } from 'react';
+import React, { ReactNode, useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { reduxActions } from '../../redux/reducers';
@@ -22,12 +22,14 @@ import { useContextMenuTrigger } from '../external/FileContextMenu-hooks';
 import { DnDFileListDragLayer } from '../file-list/DnDFileListDragLayer';
 import { HotkeyListener } from './HotkeyListener';
 
-export interface ChonkyPresentationLayerProps {}
+export interface ChonkyPresentationLayerProps {
+    children: ReactNode;
+}
 
 export const ChonkyPresentationLayer: React.FC<ChonkyPresentationLayerProps> = ({
     children,
 }) => {
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<any>();
     const fileActionIds = useSelector(selectFileActionIds);
     const dndDisabled = useSelector(selectIsDnDDisabled);
     const clearSelectionOnOutsideClick = useSelector(

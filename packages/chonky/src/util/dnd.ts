@@ -24,10 +24,11 @@ import { FileData } from '../types/file.types';
 import { useDragIfAvailable, useDropIfAvailable } from './dnd-fallback';
 import { FileHelper } from './file-helper';
 import { useInstanceVariable } from './hooks-helpers';
+import { RootState } from '../types/redux.types';
 
 export const useFileDrag = (file: Nullable<FileData>) => {
     // Prepare the dnd payload
-    const store = useStore();
+    const store = useStore<RootState>();
     const fileRef = useInstanceVariable(file);
     const getDndStartPayload = useCallback<() => StartDragNDropPayload>(() => {
         const reduxState = store.getState();
@@ -42,18 +43,11 @@ export const useFileDrag = (file: Nullable<FileData>) => {
     }, [store, fileRef]);
 
     // For drag source
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<any>();
     const canDrag = useCallback(() => FileHelper.isDraggable(fileRef.current), [
         fileRef,
     ]);
-    const onDragStart = useCallback((): ChonkyDndFileEntryItem => {
-        const item: ChonkyDndFileEntryItem = {
-            type: ChonkyDndFileEntryType,
-            payload: getDndStartPayload(),
-        };
-        dispatch(thunkRequestFileAction(ChonkyActions.StartDragNDrop, item.payload));
-        return item;
-    }, [dispatch, getDndStartPayload]);
+
     const onDragEnd = useCallback(
         (item: ChonkyDndFileEntryItem, monitor: DragSourceMonitor) => {
             const dropResult = monitor.getDropResult() as ChonkyDndDropResult;
@@ -77,22 +71,23 @@ export const useFileDrag = (file: Nullable<FileData>) => {
     );
 
     // Create refs for react-dnd hooks
-    const item = useMemo<ChonkyDndFileEntryItem>(
-        () => ({
+    const item = useCallback((): ChonkyDndFileEntryItem => {
+        const item: ChonkyDndFileEntryItem = {
             type: ChonkyDndFileEntryType,
-            // Payload is actually added in `onDragStart`
-            payload: {} as StartDragNDropPayload,
-        }),
-        []
-    );
-    const collect = useCallback(monitor => ({ isDragging: monitor.isDragging() }), []);
+            payload: getDndStartPayload(),
+        };
+        dispatch(thunkRequestFileAction(ChonkyActions.StartDragNDrop, item.payload));
+        return item;
+    }, [dispatch, getDndStartPayload]);
+
+    const collect = useCallback((monitor: DragSourceMonitor) => ({ isDragging: monitor.isDragging() }), []);
     const [{ isDragging: dndIsDragging }, drag, preview] = useDragIfAvailable({
         item,
         canDrag,
-        begin: onDragStart,
         // @ts-ignore
         end: onDragEnd,
         collect,
+        type: ChonkyDndFileEntryType,
     });
 
     useEffect(() => {
@@ -117,7 +112,7 @@ export const useFileDrop = ({
 }: UseFileDropParams) => {
     const folderChainRef = useInstanceVariable(useSelector(selectFolderChain));
     const onDrop = useCallback(
-        (_item: ChonkyDndFileEntryItem, monitor) => {
+        (_item: ChonkyDndFileEntryItem, monitor: DropTargetMonitor) => {
             if (!monitor.canDrop()) return;
             const customDropResult: ExcludeKeys<ChonkyDndDropResult, 'dropEffect'> = {
                 dropTarget: file,
@@ -130,6 +125,7 @@ export const useFileDrop = ({
         (item: ChonkyDndFileEntryItem, monitor: DropTargetMonitor) => {
             if (
                 forceDisableDrop ||
+                !file ||
                 !FileHelper.isDroppable(file) ||
                 (!monitor.isOver({ shallow: true }) && !includeChildrenDrops)
             ) {
@@ -157,7 +153,7 @@ export const useFileDrop = ({
         [forceDisableDrop, file, includeChildrenDrops, folderChainRef]
     );
     const collect = useCallback(
-        monitor => ({
+        (monitor: DropTargetMonitor) => ({
             isOver: monitor.isOver(),
             isOverCurrent: monitor.isOver({ shallow: true }),
             canDrop: monitor.canDrop(),
@@ -195,12 +191,13 @@ export const useFileEntryDnD = (file: Nullable<FileData>) => {
 };
 
 export const useDndHoverOpen = (file: Nullable<FileData>, dndState: DndEntryState) => {
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<any>();
     const currentFolderRef = useInstanceVariable(useSelector(selectCurrentFolder));
     useEffect(() => {
         let timeout: Nullable<any> = null;
         if (
             dndState.dndIsOver &&
+            file &&
             FileHelper.isDndOpenable(file) &&
             file.id !== currentFolderRef.current?.id
         ) {

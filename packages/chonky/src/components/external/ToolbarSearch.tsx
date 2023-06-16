@@ -33,7 +33,7 @@ export const ToolbarSearch: React.FC<ToolbarSearchProps> = React.memo(() => {
 
     const searchInputRef = useRef<HTMLInputElement>();
 
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<any>();
     const reduxSearchString = useSelector(selectSearchString);
 
     const [localSearchString, setLocalSearchString] = useState(reduxSearchString);
